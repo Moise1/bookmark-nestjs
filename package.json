@@ -6,6 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "dev-prisma:deploy": "prisma migrate deploy",
+    "dev-db:rm": "docker-compose rm dev-db",
+    "dev-db:up": "docker-compose up -d",
+    "dev-db:restart": "yarn dev-db:rm && yarn dev-db:up && sleep 1 && yarn dev-prisma:deploy",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -25,6 +29,9 @@
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
     "@prisma/client": "^3.15.2",
+    "argon2": "^0.28.5",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
