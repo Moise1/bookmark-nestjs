@@ -1,11 +1,17 @@
 import {Injectable, ConflictException, HttpStatus, HttpException} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
 import { PrismaOpsService } from 'src/prisma-ops/prisma-ops.service';
 import { AuthDto } from './dto';
 @Injectable()
 export class AuthService {
-  constructor(private prismaOpsService: PrismaOpsService) {}
+  constructor(
+    private prismaOpsService: PrismaOpsService,
+    private jwt: JwtService,
+    private config: ConfigService,
+  ) {}
 
   async login(body: AuthDto) {
     try {
@@ -21,7 +27,7 @@ export class AuthService {
       
       return {
           message: 'Successfully logged in',
-          user
+          token: await this.signToken(user.id, user.email)
       }
     } catch (error) {
       if (error instanceof HttpException) {
@@ -29,6 +35,8 @@ export class AuthService {
       }
     }
   }
+
+ 
 
   async register(body: AuthDto) {
     try {
@@ -39,7 +47,10 @@ export class AuthService {
           hash,
         },
       });
-      return user;
+      return {
+        message: 'Account created successfully',
+        token: await this.signToken(user.id, user.email)
+    };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') throw new ConflictException('Email already taken.');
@@ -47,4 +58,13 @@ export class AuthService {
       }
     }
   }
+
+  async signToken(userId: number, email: string): Promise<string>{
+    const payload = {userId,email};
+    return await this.jwt.signAsync(payload, {
+      expiresIn: '15m',
+      secret: this.config.get('JWT_SECRET')
+    })
+  }
+
 }
