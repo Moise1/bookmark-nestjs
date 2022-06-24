@@ -68,5 +68,3 @@ export class AuthService {
   }
 
 }
-
-// Stopped at 1:47:17
