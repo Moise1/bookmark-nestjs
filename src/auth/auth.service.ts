@@ -62,9 +62,11 @@ export class AuthService {
   async signToken(userId: number, email: string): Promise<string>{
     const payload = {userId,email};
     return await this.jwt.signAsync(payload, {
-      expiresIn: '15m',
+      expiresIn: '1d',
       secret: this.config.get('JWT_SECRET')
     })
   }
 
 }
+
+// Stopped at 1:47:17
