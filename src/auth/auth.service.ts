@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
-import { PrismaOpsService } from 'src/prisma-ops/prisma-ops.service';
+import { PrismaOpsService } from '../prisma-ops/prisma-ops.service';
 import { AuthDto } from './dto';
 @Injectable()
 export class AuthService {
