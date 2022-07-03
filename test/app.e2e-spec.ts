@@ -4,6 +4,7 @@ import * as pactum from 'pactum';
 import { PrismaOpsService } from '../src/prisma-ops/prisma-ops.service';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from 'src/auth/dto';
+import { EditUserDto } from 'src/user/dto/editUser.dto';
 
 
 const testUrl = 'http://localhost:3005';
@@ -28,16 +29,21 @@ describe('App e2e', () => {
     app.close();
   });
 
+  // User/auth tests
+
   describe('Auth', () =>{
 
     describe('Sign Up', () =>{
       it('Should fail wihout email', () =>{
+        // const body: AuthDto = {
+        //   email: 'mosha@gmail.com',
+        //   password: '1234'
+        // }
 
-        
         return pactum
         .spec()
         .post(`${testUrl}/auth/register`)
-        .withBody({password: '1235'})
+        .withBody({password: '1234'})
         .expectStatus(400)
       });
 
@@ -90,28 +96,56 @@ describe('App e2e', () => {
     });
 
 
-    describe('Edit user', () =>{});
+    describe('Edit user', () =>{
+
+      it('Should edit user', () => {
+        const body: EditUserDto = {
+          firstName: 'moshes',
+          email: 'mosheo@gmail.com'
+        };
+        return  pactum
+        .spec()
+        .patch(`${testUrl}/users/edit`)
+        .withHeaders({
+          'Authorization': 'Bearer $S{user_token}'
+        })
+        .withBody(body)
+        .expectStatus(200)
+        .expectBodyContains(body.email)
+      })
+
+    });
 
   });
 
+  //  Bookmarks tests
+
   describe('Bookmarks', () => {
 
-    describe('Create bookmark', () =>{});
+    describe('Get bookmarks', () =>{
+      it('Should get all bookmarks', () => {
+        return  pactum
+        .spec()
+        .get(`${testUrl}/bookmarks`)
+        .withHeaders({
+          'Authorization': 'Bearer $S{user_token}'
+        })
+        .expectStatus(200)
+        .inspect()
+      })
+    });
 
-    describe('Get bookmarks', () =>{});
+    describe('Create bookmark', () =>{});
 
 
     describe('Get by id', () =>{});
 
 
-    describe('Edit bookmark', () =>{});
+    describe('Edit bookmark by id', () =>{});
 
 
-    describe('Delete bookmark', () =>{});
+    describe('Delete bookmark by id', () =>{});
 
   });
 
 })
-
-
-// Stopped at 3:04:52
